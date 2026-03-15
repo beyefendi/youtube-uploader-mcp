@@ -63,6 +63,9 @@ func (t *UploadVideoTool) Define(context.Context) mcp.Tool {
 		mcp.WithString("subtitle_language",
 			mcp.Description("Language code of the subtitle track (ISO 639-1). Default is en (English)."),
 		),
+		mcp.WithString("thumbnail_path",
+			mcp.Description("Optional path to an image file to use as the video's custom thumbnail"),
+		),
 		mcp.WithBoolean("made_for_kids",
 			mcp.Description("Whether the video is made exclusively for kids. Default is false"),
 		),
@@ -93,6 +96,7 @@ func (t *UploadVideoTool) Handle(
 	subtitlePath := request.GetString("subtitle_path", "")
 	subtitleLanguage := request.GetString("subtitle_language", "en")
 	videoLanguage := request.GetString("video_language", "en")
+	thumbnailPath := request.GetString("thumbnail_path", "")
 
 	channel, err := t.Core.GetChannelByID(channelId)
 	if err != nil {
@@ -154,6 +158,12 @@ func (t *UploadVideoTool) Handle(
 	if subtitlePath != "" {
 		if err := t.Core.AddSubtitles(ctx, id, subtitlePath, subtitleLanguage, channel.Token); err != nil {
 			return mcp.NewToolResultError("Failed to add subtitles: " + err.Error()), nil
+		}
+	}
+
+	if thumbnailPath != "" {
+		if err := t.Core.SetThumbnail(ctx, id, thumbnailPath, channel.Token); err != nil {
+			return mcp.NewToolResultError("Failed to set thumbnail: " + err.Error()), nil
 		}
 	}
 
