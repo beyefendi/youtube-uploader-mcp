@@ -6,7 +6,6 @@ import (
 	"os"
 
 	"golang.org/x/oauth2"
-	"google.golang.org/api/youtube/v3"
 )
 
 // SetThumbnail uploads a custom thumbnail for the given video ID.
